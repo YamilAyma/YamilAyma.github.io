@@ -1,0 +1,247 @@
+<!DOCTYPE html><html lang="es"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><meta name="generator" content="Astro v5.16.5"><title>[Tutorial] - ¿Como puedes ordenar tus recuerdos automaticamente?</title><meta name="description" content="Usaremos Google Apps Script para orquestar la automatización de Google Drive "><meta property="og:type" content="website"><meta property="og:url" content="https://yamilayma.github.io/blog/tutorial/ordenar-recuerdos/"><meta property="og:title" content="[Tutorial] - ¿Como puedes ordenar tus recuerdos automaticamente?"><meta property="og:description" content="Usaremos Google Apps Script para orquestar la automatización de Google Drive "><meta property="og:image" content="https://raw.githubusercontent.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/main/img/banner.png"><!-- Script de inicialización del tema (evita FOUC) --><!-- Los temas se inyectan desde themes.ts para evitar duplicación --><script>(function(){const themesJSON = "{\"soft\":{\"id\":\"soft\",\"name\":\"Inspirado Everforest\",\"type\":\"light\",\"colors\":{\"background\":\"#FFFBEF\",\"text\":\"#4A403A\",\"primary\":\"#F2D2BD\",\"accent\":\"#FFB7B2\",\"border\":\"rgba(74, 64, 58, 0.1)\"},\"fonts\":{\"heading\":\"\\\"Comic Neue\\\", cursive\",\"body\":\"\\\"Balsamiq Sans\\\", sans-serif\"},\"ui\":{\"siteTitle\":\"#A6B0A0\",\"navLink\":\"#DFA000\",\"navLinkHover\":\"#f5cf6eff\"},\"markdown\":{\"h1\":\"#3A94C5\",\"h2\":\"#3A94C5\",\"h3\":\"#3A94C5\",\"h4\":\"#4A9A8F\",\"h5\":\"#5AAA9F\",\"h6\":\"#6ABAAF\",\"p\":\"#4A403A\",\"bold\":\"#3A94C5\",\"italic\":\"#6A605A\",\"a\":\"#DF69BA\",\"aHover\":\"#f187d0ff\",\"code\":\"#C026D3\",\"codeBg\":\"rgba(192, 38, 211, 0.1)\",\"blockquote\":\"#6A605A\",\"blockquoteBorder\":\"#F2D2BD\",\"hr\":\"#E5D5C5\"}},\"tech\":{\"id\":\"tech\",\"name\":\"Tech Blue\",\"type\":\"light\",\"colors\":{\"background\":\"#F0F4F8\",\"text\":\"#1E293B\",\"primary\":\"#A8C5E6\",\"accent\":\"#3B82F6\",\"border\":\"rgba(30, 41, 59, 0.1)\"},\"fonts\":{\"heading\":\"\\\"Inter\\\", sans-serif\",\"body\":\"\\\"Roboto\\\", sans-serif\"},\"ui\":{\"siteTitle\":\"#1E293B\",\"navLink\":\"#475569\",\"navLinkHover\":\"#3B82F6\"},\"markdown\":{\"h1\":\"#0F172A\",\"h2\":\"#1E293B\",\"h3\":\"#334155\",\"h4\":\"#475569\",\"h5\":\"#64748B\",\"h6\":\"#94A3B8\",\"p\":\"#334155\",\"bold\":\"#0F172A\",\"italic\":\"#475569\",\"a\":\"#3B82F6\",\"aHover\":\"#2563EB\",\"code\":\"#0EA5E9\",\"codeBg\":\"rgba(14, 165, 233, 0.1)\",\"blockquote\":\"#64748B\",\"blockquoteBorder\":\"#3B82F6\",\"hr\":\"#CBD5E1\"}},\"dark\":{\"id\":\"dark\",\"name\":\"Elegant Dark\",\"type\":\"dark\",\"colors\":{\"background\":\"#1C1917\",\"text\":\"#E7E5E4\",\"primary\":\"#7FBBB3\",\"accent\":\"#84b9c9\",\"border\":\"rgba(231, 229, 228, 0.1)\"},\"fonts\":{\"heading\":\"\\\"Comic Neue\\\", cursive\",\"body\":\"\\\"Balsamiq Sans\\\", sans-serif\"},\"ui\":{\"siteTitle\":\"#A6B0A0\",\"navLink\":\"#DBBC7F\",\"navLinkHover\":\"#faeed7ff\"},\"markdown\":{\"h1\":\"#7FBBB3\",\"h2\":\"#7FBBB3\",\"h3\":\"#7FBBB3\",\"h4\":\"#8FCBC3\",\"h5\":\"#9FDBD3\",\"h6\":\"#AFEBE3\",\"p\":\"#F4EAD5\",\"bold\":\"#7FBBB3\",\"italic\":\"#DBBC7F\",\"a\":\"#DF69BA\",\"aHover\":\"#ee99d3ff\",\"code\":\"#22D3EE\",\"codeBg\":\"rgba(34, 211, 238, 0.1)\",\"blockquote\":\"#f3efedff\",\"blockquoteBorder\":\"#C4B5FD\",\"hr\":\"#3A3A3A\"}}}";
+const defaultThemeId = "soft";
+
+            const THEMES = JSON.parse(themesJSON);
+
+            const pref =
+                localStorage.getItem("blog-theme-preference") || "auto";
+            const isDark =
+                pref === "dark" ||
+                (pref === "auto" &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches);
+            const themeId = isDark ? "dark" : defaultThemeId;
+            const theme = THEMES[themeId];
+            const root = document.documentElement;
+
+            if (isDark) root.classList.add("dark");
+            else root.classList.remove("dark");
+
+            if (theme) {
+                // Colores principales
+                root.style.setProperty("--color-primary", theme.colors.primary);
+                root.style.setProperty(
+                    "--color-background",
+                    theme.colors.background,
+                );
+                root.style.setProperty("--color-text", theme.colors.text);
+                root.style.setProperty("--color-accent", theme.colors.accent);
+                root.style.setProperty("--color-border", theme.colors.border);
+                // Tipografías
+                root.style.setProperty("--font-heading", theme.fonts.heading);
+                root.style.setProperty("--font-body", theme.fonts.body);
+                // UI
+                root.style.setProperty("--ui-site-title", theme.ui.siteTitle);
+                root.style.setProperty("--ui-nav-link", theme.ui.navLink);
+                root.style.setProperty(
+                    "--ui-nav-link-hover",
+                    theme.ui.navLinkHover,
+                );
+                // Markdown
+                root.style.setProperty("--md-h1", theme.markdown.h1);
+                root.style.setProperty("--md-h2", theme.markdown.h2);
+                root.style.setProperty("--md-h3", theme.markdown.h3);
+                root.style.setProperty("--md-p", theme.markdown.p);
+                root.style.setProperty("--md-a", theme.markdown.a);
+                root.style.setProperty("--md-a-hover", theme.markdown.aHover);
+                root.style.setProperty("--md-code", theme.markdown.code);
+                root.style.setProperty("--md-code-bg", theme.markdown.codeBg);
+                root.style.setProperty(
+                    "--md-blockquote",
+                    theme.markdown.blockquote,
+                );
+                root.style.setProperty(
+                    "--md-blockquote-border",
+                    theme.markdown.blockquoteBorder,
+                );
+            }
+        })();</script><link rel="stylesheet" href="/_astro/_slug_.C2FzZtke.css">
+<style>.floating-navbar-inner[data-astro-cid-bdgmqclt]{background-color:var(--color-background);border:1px solid var(--color-border);backdrop-filter:blur(12px)}.floating-separator[data-astro-cid-bdgmqclt]{background-color:var(--color-text)}.floating-navbar[data-astro-cid-bdgmqclt].visible{opacity:1;transform:translate(-50%) translateY(0);pointer-events:auto}.floating-nav-item[data-astro-cid-bdgmqclt]:hover{background-color:#0000000d}.dark[data-astro-cid-bdgmqclt] .floating-nav-item[data-astro-cid-bdgmqclt]:hover{background-color:#ffffff14}.floating-navbar-inner[data-astro-cid-bdgmqclt]{box-shadow:0 8px 30px #0000001f,0 4px 12px #00000014,0 0 0 1px #0000000d}.dark[data-astro-cid-bdgmqclt] .floating-navbar-inner[data-astro-cid-bdgmqclt]{box-shadow:0 8px 30px #00000080,0 4px 12px #0006,0 0 0 1px #ffffff14}@media(max-width:768px){.floating-navbar[data-astro-cid-bdgmqclt]{display:none}}
+</style></head> <body class="flex flex-col min-h-screen" data-category="Tutorial"> <header class="w-full max-w-3xl mx-auto py-8 px-6 flex items-center justify-between"> <a href="/" class="site-title text-2xl font-bold font-heading transition-colors"> Blog </a> <!-- Navegación de escritorio --> <nav class="hidden md:flex items-center gap-6"> <a href="/sobre-mi" class="nav-link text-lg font-medium"> Sobre Mí </a><a href="/blog" class="nav-link text-lg font-medium"> Blog </a><a href="/galeria" class="nav-link text-lg font-medium"> Galería </a><a href="/contacto" class="nav-link text-lg font-medium"> Contacto </a> </nav> <div class="flex items-center gap-2"> <div class="relative"> <!-- Botón del dropdown --> <button id="theme-toggle" class="theme-toggle-btn p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors" aria-label="Cambiar tema" aria-haspopup="true" aria-expanded="false"> <!-- Icono Sol (visible en modo oscuro) --> <svg id="sun-icon" class="w-6 h-6 hidden dark:block" style="color: var(--ui-nav-link);" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path> </svg> <!-- Icono Luna (visible en modo claro) --> <svg id="moon-icon" class="w-6 h-6 block dark:hidden" style="color: var(--ui-nav-link);" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path> </svg> </button> <!-- Menú desplegable --> <div id="theme-menu" class="hidden absolute right-0 mt-2 py-2 w-36 bg-white dark:bg-stone-800 rounded-lg shadow-lg border border-black/10 dark:border-white/10 z-50" role="menu"> <button data-theme="auto" class="theme-option w-full text-left px-4 py-2 text-sm text-stone-700 dark:text-stone-200 hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2" role="menuitem"> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path> </svg>
+Auto
+</button> <button data-theme="light" class="theme-option w-full text-left px-4 py-2 text-sm text-stone-700 dark:text-stone-200 hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2" role="menuitem"> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path> </svg>
+Claro
+</button> <button data-theme="dark" class="theme-option w-full text-left px-4 py-2 text-sm text-stone-700 dark:text-stone-200 hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2" role="menuitem"> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path> </svg>
+Oscuro
+</button> </div> </div> <script type="module" src="/_astro/ThemeToggle.astro_astro_type_script_index_0_lang.DWiVoZcA.js"></script> <!-- Botón de menú móvil --> <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors" aria-label="Abrir menú" aria-expanded="false"> <svg class="w-6 h-6" style="color: var(--ui-nav-link);" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path> </svg> </button> </div> </header> <!-- Menú lateral móvil --> <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden opacity-0 transition-opacity duration-300" aria-hidden="true"></div> <nav id="mobile-menu" class="fixed top-0 right-0 h-full w-64 z-50 transform translate-x-full transition-transform duration-300 shadow-xl" style="background-color: var(--color-background);" aria-label="Menú de navegación móvil"> <div class="flex items-center justify-between p-6 border-b" style="border-color: var(--color-border);"> <span class="font-bold font-heading text-lg" style="color: var(--color-text);">Menú</span> <button id="mobile-menu-close" class="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors" aria-label="Cerrar menú"> <svg class="w-6 h-6" style="color: var(--ui-nav-link);" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path> </svg> </button> </div> <div class="p-6 flex flex-col gap-4"> <a href="/sobre-mi" class="mobile-nav-link text-lg font-medium py-2 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors" style="color: var(--ui-nav-link);"> Sobre Mí </a><a href="/blog" class="mobile-nav-link text-lg font-medium py-2 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors" style="color: var(--ui-nav-link);"> Blog </a><a href="/galeria" class="mobile-nav-link text-lg font-medium py-2 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors" style="color: var(--ui-nav-link);"> Galería </a><a href="/contacto" class="mobile-nav-link text-lg font-medium py-2 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors" style="color: var(--ui-nav-link);"> Contacto </a> </div> </nav> <script type="module">const t=document.getElementById("mobile-menu-btn"),o=document.getElementById("mobile-menu-close"),s=document.getElementById("mobile-menu"),e=document.getElementById("mobile-menu-overlay");function l(){s?.classList.remove("translate-x-full"),e?.classList.remove("hidden"),setTimeout(()=>e?.classList.remove("opacity-0"),10),t?.setAttribute("aria-expanded","true"),document.body.style.overflow="hidden"}function n(){s?.classList.add("translate-x-full"),e?.classList.add("opacity-0"),setTimeout(()=>e?.classList.add("hidden"),300),t?.setAttribute("aria-expanded","false"),document.body.style.overflow=""}t?.addEventListener("click",l);o?.addEventListener("click",n);e?.addEventListener("click",n);document.addEventListener("keydown",d=>{d.key==="Escape"&&n()});</script> <main class="flex-grow w-full max-w-3xl mx-auto px-6 py-8">  <div id="floating-navbar" class="floating-navbar fixed bottom-10 left-1/2 z-50 opacity-0 translate-y-4 pointer-events-none transition-all duration-300" aria-hidden="true" data-astro-cid-bdgmqclt> <nav class="floating-navbar-inner flex items-center gap-1 px-3 py-2 rounded-full shadow-lg" data-astro-cid-bdgmqclt> <!-- Logo/Título --> <a href="/" class="floating-nav-item font-heading font-bold text-sm px-3 py-1.5 rounded-full transition-colors" style="color: var(--ui-site-title);" data-astro-cid-bdgmqclt> Blog </a> <!-- Separador --> <div class="floating-separator w-px h-5 opacity-20" data-astro-cid-bdgmqclt></div> <!-- Links de navegación --> <a href="/sobre-mi" class="floating-nav-item text-sm font-medium px-3 py-1.5 rounded-full transition-colors" style="color: var(--ui-nav-link);" data-astro-cid-bdgmqclt> Sobre Mí </a><a href="/blog" class="floating-nav-item text-sm font-medium px-3 py-1.5 rounded-full transition-colors" style="color: var(--ui-nav-link);" data-astro-cid-bdgmqclt> Blog </a><a href="/galeria" class="floating-nav-item text-sm font-medium px-3 py-1.5 rounded-full transition-colors" style="color: var(--ui-nav-link);" data-astro-cid-bdgmqclt> Galería </a><a href="/contacto" class="floating-nav-item text-sm font-medium px-3 py-1.5 rounded-full transition-colors" style="color: var(--ui-nav-link);" data-astro-cid-bdgmqclt> Contacto </a> <!-- Separador --> <div class="floating-separator w-px h-5 opacity-20" data-astro-cid-bdgmqclt></div> <!-- Theme Toggle Button (simplificado para evitar conflicto de IDs) --> <button id="floating-theme-toggle" class="floating-nav-item p-2 rounded-full transition-colors" aria-label="Cambiar tema" data-astro-cid-bdgmqclt> <!-- Icono Sol  --> <svg class="floating-sun-icon w-5 h-5 hidden dark:block" style="color: var(--ui-nav-link);" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-astro-cid-bdgmqclt> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" data-astro-cid-bdgmqclt></path> </svg> <!-- Icono Luna --> <svg class="floating-moon-icon w-5 h-5 block dark:hidden" style="color: var(--ui-nav-link);" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-astro-cid-bdgmqclt> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" data-astro-cid-bdgmqclt></path> </svg> </button> </nav> </div>  <script type="module" src="/_astro/FloatingNavbar.astro_astro_type_script_index_0_lang.C3IRBYLH.js"></script> <article class="prose prose-lg dark:prose-invert max-w-none prose-headings:font-heading prose-p:font-body"> <div class="mb-10 border-b border-black/5 dark:border-white/5 pb-8"> <div class="flex items-center"> <img src="/images/stickers/tutorial.png" alt="Categoría: Tutorial" class="sticker w-30 h-30 rounded-full object-cover shadow-sm border-2" style="border-color: var(--color-accent);"> </div> <h1 class="mb-4 text-4xl md:text-5xl font-bold"> [Tutorial] - ¿Como puedes ordenar tus recuerdos automaticamente? </h1> <div class="text-stone-500 dark:text-stone-400 text-sm font-mono"> <time datetime="2026-01-03T00:00:00.000Z"> 3 de enero de 2026 </time> </div> </div> <img src="https://raw.githubusercontent.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/main/img/banner.png" alt="[Tutorial] - ¿Como puedes ordenar tus recuerdos automaticamente?" class="w-full h-auto rounded-3xl shadow-lg mb-8"> <div class="mt-8">  <p>Este sistema automatiza la organización de tus fotos y archivos en Google Drive, renombrándolos con formato de fecha y moviéndolos a carpetas organizadas por año y mes.</p>
+<hr/>
+<h2 id="flujo-de-operaciones">Flujo de operaciones</h2>
+<p><img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/diagrama.png" alt="Flujo de operaciones"/></p>
+<h2 id="prerrequisitos">Prerrequisitos</h2>
+<p>El sistema funciona con <strong>2 cuentas</strong> para que sea efectivo.</p>
+<ol>
+<li><strong>Cuenta A (Tu cuenta principal):</strong> Aquí es donde subes las fotos desde tu celular o PC a la carpeta de “bandeja de entrada”.</li>
+<li><strong>Cuenta B (La nueva de almacenamiento):</strong> Aquí es donde vivirá el script, donde se guardarán los archivos permanentemente y la que pondrá el espacio de 15GB.</li>
+</ol>
+<hr/>
+<h2 id="configuración-inicial">Configuración Inicial</h2>
+<h3 id="paso-1-configuración-de-carpetas">Paso 1: Configuración de Carpetas</h3>
+<h4 id="11-en-tu-cuenta-a">1.1 En tu Cuenta A:</h4>
+<ul>
+<li>Crea una carpeta llamada <code>BANDEJA_RECUERDOS</code>.
+<img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/1.png" alt="Paso 1.1"/></li>
+<li>Haz clic derecho -&gt; <strong>Compartir</strong> -&gt; Escribe el correo de tu <strong>Cuenta B</strong>.
+<img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/2.png" alt="Paso 1.2"/></li>
+<li><strong>IMPORTANTE:</strong> Asegúrate de que tenga permiso de <strong>Editor</strong>.</li>
+<li>Copia el ID de esta carpeta (está en la URL después de <code>folders/</code>).
+<img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/3.png" alt="Paso 1.3"/></li>
+</ul>
+<h4 id="12-en-tu-cuenta-b">1.2 En tu Cuenta B:</h4>
+<ul>
+<li>Crea una carpeta llamada <code>MIS_RECUERDOS_GUARDADOS</code> (recomiendo ponerlo con el sufijo de año ej: MIS_RECUERDOS_GUARDADOS_2026).
+<img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/4.png" alt="Paso 1.4"/></li>
+<li>Copia el ID de esta carpeta. Ver imagen anterior de como encontrarlo</li>
+</ul>
+<hr/>
+<h3 id="paso-2-el-script-principal">Paso 2: El Script Principal</h3>
+<p>Entra a <a href="https://script.google.com">script.google.com</a> con la <strong>Cuenta B</strong>, crea un “Nuevo Proyecto” y pega este código:</p>
+<p><img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/5.png" alt="Paso 2.1"/></p>
+<pre class="astro-code astro-code-themes github-light github-dark-dimmed" style="background-color:#fff;--shiki-dark-bg:#22272e;color:#24292e;--shiki-dark:#adbac7;overflow-x:auto" tabindex="0" data-language="javascript"><code><span class="line"><span style="color:#6A737D;--shiki-dark:#768390">// ==========================================</span></span>
+<span class="line"><span style="color:#6A737D;--shiki-dark:#768390">// CONFIGURACIÓN (RELLENA ESTOS DATOS)</span></span>
+<span class="line"><span style="color:#6A737D;--shiki-dark:#768390">// ==========================================</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> ID_CARPETA_ENTRADA</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#032F62;--shiki-dark:#96D0FF"> &#39;ESCRIBE_AQUI_EL_ID_DE_LA_CUENTA_A&#39;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">;</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> ID_CARPETA_DESTINO_FINAL</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#032F62;--shiki-dark:#96D0FF"> &#39;ESCRIBE_AQUI_EL_ID_DE_LA_CUENTA_B&#39;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">;</span></span>
+<span class="line"><span style="color:#6A737D;--shiki-dark:#768390">// ==========================================</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">function</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB"> ejecutarOrganizacion</span><span style="color:#24292E;--shiki-dark:#ADBAC7">() {</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> bandejaEntrada</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> DriveApp.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getFolderById</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(</span><span style="color:#005CC5;--shiki-dark:#6CB6FF">ID_CARPETA_ENTRADA</span><span style="color:#24292E;--shiki-dark:#ADBAC7">);</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> destinoRaiz</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> DriveApp.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getFolderById</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(</span><span style="color:#005CC5;--shiki-dark:#6CB6FF">ID_CARPETA_DESTINO_FINAL</span><span style="color:#24292E;--shiki-dark:#ADBAC7">);</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> archivos</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> bandejaEntrada.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getFiles</span><span style="color:#24292E;--shiki-dark:#ADBAC7">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> meses</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> [</span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;01-Enero&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;02-Febrero&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;03-Marzo&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;04-Abril&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;05-Mayo&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;06-Junio&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span></span>
+<span class="line"><span style="color:#032F62;--shiki-dark:#96D0FF">                 &quot;07-Julio&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;08-Agosto&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;09-Septiembre&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;10-Octubre&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;11-Noviembre&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;12-Diciembre&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">];</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">  </span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> diasSemana</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> [</span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;Domingo&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;Lunes&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;Martes&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;Miércoles&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;Jueves&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;Viernes&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;Sábado&quot;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">];</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  while</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> (archivos.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">hasNext</span><span style="color:#24292E;--shiki-dark:#ADBAC7">()) {</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> archivo </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> archivos.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">next</span><span style="color:#24292E;--shiki-dark:#ADBAC7">();</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> fecha </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> archivo.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getDateCreated</span><span style="color:#24292E;--shiki-dark:#ADBAC7">();</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">    </span></span>
+<span class="line"><span style="color:#6A737D;--shiki-dark:#768390">    // 1. Datos de la fecha</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> anio </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> fecha.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getFullYear</span><span style="color:#24292E;--shiki-dark:#ADBAC7">();</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> mesNum </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> (</span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;0&quot;</span><span style="color:#D73A49;--shiki-dark:#F47067"> +</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> (fecha.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getMonth</span><span style="color:#24292E;--shiki-dark:#ADBAC7">() </span><span style="color:#D73A49;--shiki-dark:#F47067">+</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> 1</span><span style="color:#24292E;--shiki-dark:#ADBAC7">)).</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">slice</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(</span><span style="color:#D73A49;--shiki-dark:#F47067">-</span><span style="color:#005CC5;--shiki-dark:#6CB6FF">2</span><span style="color:#24292E;--shiki-dark:#ADBAC7">);</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> diaNum </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> (</span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;0&quot;</span><span style="color:#D73A49;--shiki-dark:#F47067"> +</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> fecha.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getDate</span><span style="color:#24292E;--shiki-dark:#ADBAC7">()).</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">slice</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(</span><span style="color:#D73A49;--shiki-dark:#F47067">-</span><span style="color:#005CC5;--shiki-dark:#6CB6FF">2</span><span style="color:#24292E;--shiki-dark:#ADBAC7">);</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> nombreDia </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> diasSemana[fecha.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getDay</span><span style="color:#24292E;--shiki-dark:#ADBAC7">()];</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> semanaMes </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> Math.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">ceil</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(fecha.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getDate</span><span style="color:#24292E;--shiki-dark:#ADBAC7">() </span><span style="color:#D73A49;--shiki-dark:#F47067">/</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> 7</span><span style="color:#24292E;--shiki-dark:#ADBAC7">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D;--shiki-dark:#768390">    // 2. Crear nuevo nombre según tu plantilla</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> fechaFormato </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> anio </span><span style="color:#D73A49;--shiki-dark:#F47067">+</span><span style="color:#032F62;--shiki-dark:#96D0FF"> &quot;-&quot;</span><span style="color:#D73A49;--shiki-dark:#F47067"> +</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> mesNum </span><span style="color:#D73A49;--shiki-dark:#F47067">+</span><span style="color:#032F62;--shiki-dark:#96D0FF"> &quot;-&quot;</span><span style="color:#D73A49;--shiki-dark:#F47067"> +</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> diaNum;</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> nombreOriginal </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> archivo.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getName</span><span style="color:#24292E;--shiki-dark:#ADBAC7">();</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> nuevoNombre </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#032F62;--shiki-dark:#96D0FF"> `[${</span><span style="color:#24292E;--shiki-dark:#ADBAC7">fechaFormato</span><span style="color:#032F62;--shiki-dark:#96D0FF">}] - ${</span><span style="color:#24292E;--shiki-dark:#ADBAC7">nombreDia</span><span style="color:#032F62;--shiki-dark:#96D0FF">} - Sem.${</span><span style="color:#24292E;--shiki-dark:#ADBAC7">semanaMes</span><span style="color:#032F62;--shiki-dark:#96D0FF">} - ${</span><span style="color:#24292E;--shiki-dark:#ADBAC7">nombreOriginal</span><span style="color:#032F62;--shiki-dark:#96D0FF">}`</span><span style="color:#24292E;--shiki-dark:#ADBAC7">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D;--shiki-dark:#768390">    // 3. Organizar carpetas</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> nombreMes </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> meses[fecha.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getMonth</span><span style="color:#24292E;--shiki-dark:#ADBAC7">()];</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> carpetaAnio </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB"> obtenerOCrear</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(destinoRaiz, anio.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">toString</span><span style="color:#24292E;--shiki-dark:#ADBAC7">());</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> carpetaMes </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB"> obtenerOCrear</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(carpetaAnio, nombreMes);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D;--shiki-dark:#768390">    // 4. TRASPASAR PROPIEDAD (Copia a B y borra de A)</span></span>
+<span class="line"><span style="color:#6A737D;--shiki-dark:#768390">    // Al hacer copia desde la Cuenta B, el nuevo archivo le pertenece a B</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> copia </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> archivo.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">makeCopy</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(nuevoNombre, carpetaMes);</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">    </span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">    console.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">log</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(</span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;Archivo procesado y movido: &quot;</span><span style="color:#D73A49;--shiki-dark:#F47067"> +</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> nuevoNombre);</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">  }</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">function</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB"> obtenerOCrear</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(</span><span style="color:#E36209;--shiki-dark:#F69D50">padre</span><span style="color:#24292E;--shiki-dark:#ADBAC7">, </span><span style="color:#E36209;--shiki-dark:#F69D50">nombre</span><span style="color:#24292E;--shiki-dark:#ADBAC7">) {</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> carpetas </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> padre.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getFoldersByName</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(nombre);</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  return</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> carpetas.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">hasNext</span><span style="color:#24292E;--shiki-dark:#ADBAC7">() </span><span style="color:#D73A49;--shiki-dark:#F47067">?</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> carpetas.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">next</span><span style="color:#24292E;--shiki-dark:#ADBAC7">() </span><span style="color:#D73A49;--shiki-dark:#F47067">:</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> padre.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">createFolder</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(nombre);</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">}</span></span></code></pre>
+<p><img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/6.png" alt="Paso 2.2"/></p>
+<hr/>
+<h3 id="paso-25-script-de-limpieza">Paso 2.5: Script de Limpieza</h3>
+<p>Seguiremos usando el script de la <strong>Cuenta B</strong> para copiar y organizar (porque así la Cuenta B se adueña del espacio), pero crearemos un mini-script en la <strong>Cuenta A</strong> que solo se encargue de limpiar la bandeja de entrada una vez que los archivos ya fueron copiados.</p>
+<p>Entra a <a href="https://script.google.com">script.google.com</a> desde tu <strong>Cuenta Principal (A)</strong> y pega esto:</p>
+<pre class="astro-code astro-code-themes github-light github-dark-dimmed" style="background-color:#fff;--shiki-dark-bg:#22272e;color:#24292e;--shiki-dark:#adbac7;overflow-x:auto" tabindex="0" data-language="javascript"><code><span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">function</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB"> limpiarBandejaEntrada</span><span style="color:#24292E;--shiki-dark:#ADBAC7">() {</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> ID_BANDEJA</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#032F62;--shiki-dark:#96D0FF"> &#39;TU_ID_DE_BANDEJA_DE_ENTRADA&#39;</span><span style="color:#24292E;--shiki-dark:#ADBAC7">; </span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> carpeta</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> DriveApp.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getFolderById</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(</span><span style="color:#005CC5;--shiki-dark:#6CB6FF">ID_BANDEJA</span><span style="color:#24292E;--shiki-dark:#ADBAC7">);</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  const</span><span style="color:#005CC5;--shiki-dark:#6CB6FF"> archivos</span><span style="color:#D73A49;--shiki-dark:#F47067"> =</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> carpeta.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getFiles</span><span style="color:#24292E;--shiki-dark:#ADBAC7">();</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">  </span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">  while</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> (archivos.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">hasNext</span><span style="color:#24292E;--shiki-dark:#ADBAC7">()) {</span></span>
+<span class="line"><span style="color:#D73A49;--shiki-dark:#F47067">    let</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> archivo </span><span style="color:#D73A49;--shiki-dark:#F47067">=</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> archivos.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">next</span><span style="color:#24292E;--shiki-dark:#ADBAC7">();</span></span>
+<span class="line"><span style="color:#6A737D;--shiki-dark:#768390">    // Como este script corre en la Cuenta A, aquí SÍ tiene permiso para borrar</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">    archivo.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">setTrashed</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(</span><span style="color:#005CC5;--shiki-dark:#6CB6FF">true</span><span style="color:#24292E;--shiki-dark:#ADBAC7">);</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">    console.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">log</span><span style="color:#24292E;--shiki-dark:#ADBAC7">(</span><span style="color:#032F62;--shiki-dark:#96D0FF">&quot;Eliminado de la bandeja: &quot;</span><span style="color:#D73A49;--shiki-dark:#F47067"> +</span><span style="color:#24292E;--shiki-dark:#ADBAC7"> archivo.</span><span style="color:#6F42C1;--shiki-dark:#DCBDFB">getName</span><span style="color:#24292E;--shiki-dark:#ADBAC7">());</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">  }</span></span>
+<span class="line"><span style="color:#24292E;--shiki-dark:#ADBAC7">}</span></span></code></pre>
+<p><img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/7.png" alt="Paso 2.5"/></p>
+<hr/>
+<h3 id="paso-3-autorización-y-prueba">Paso 3: Autorización y Prueba</h3>
+<ol>
+<li>En el editor de la Cuenta B, dale al botón <strong>Ejecutar</strong>.</li>
+<li>Te pedirá permisos. <strong>Es vital que aceptes todos</strong> (Configuración avanzada -&gt; Ir a proyecto no seguro).</li>
+<li>Si tenías algún archivo de prueba en la Cuenta A, verás cómo desaparece de ahí y aparece mágicamente en la Cuenta B con el nuevo nombre.</li>
+</ol>
+<p><img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/8.png" alt="Paso 3.1"/></p>
+<hr/>
+<h3 id="paso-4-automatización">Paso 4: Automatización</h3>
+<h4 id="41-activador-para-el-script-de-la-cuenta-b">4.1 Activador para el Script de la Cuenta B</h4>
+<p>En el menú de la izquierda (el reloj), añade un <strong>Activador</strong>:</p>
+<ul>
+<li>Función: <code>ejecutarOrganizacion</code></li>
+<li>Fuente: <code>Según tiempo</code></li>
+<li>Tipo: <code>Temporizador de día</code></li>
+<li>Hora: <code>De 2 a 3 AM</code> (así se procesa mientras duermes).</li>
+</ul>
+<p><img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/9.png" alt="Paso 4.1"/></p>
+<p><img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/10.png" alt="Paso 4.2"/></p>
+<h4 id="42-activador-para-el-script-de-la-cuenta-a">4.2 Activador para el Script de la Cuenta A</h4>
+<p>En el script de la <strong>Cuenta A</strong>, añade un activador para que se ejecute <strong>una hora después</strong> que el script de la Cuenta B.</p>
+<ul>
+<li>Si el de la Cuenta B corre a las 2:00 AM, pon este a las 3:00 AM.</li>
+</ul>
+<p><img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/11.png" alt="Paso 4.3"/></p>
+<hr/>
+<h3 id="paso-5-el-toque-final">Paso 5: El Toque Final</h3>
+<p>Para que no tengas que estar entrando a la Cuenta B para ver tus fotos:</p>
+<ol>
+<li>En la <strong>Cuenta B</strong>, haz clic derecho en la carpeta <code>MIS_RECUERDOS_GUARDADOS</code> -&gt; <strong>Compartir</strong>.</li>
+<li>Pon el correo de tu <strong>Cuenta A</strong> (con permiso de <strong>Lector</strong>).</li>
+<li>Entra a tu <strong>Cuenta A</strong> (en la web o PC).</li>
+<li>Ve a “Compartido conmigo”, busca esa carpeta, haz clic derecho y selecciona <strong>“Añadir acceso directo a Drive”</strong>.</li>
+</ol>
+<p><img src="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script/raw/main/img/steps/12.png" alt="Paso 5.1"/></p>
+<hr/>
+<h2 id="manual-de-actualización-anual">Manual de Actualización Anual</h2>
+<blockquote>
+<p><strong>Ejemplo: Pasando de 2026 a 2027</strong></p>
+</blockquote>
+<h3 id="1-en-la-cuenta-del-año-que-termina-cuenta-2026">1. En la Cuenta del año que termina (Cuenta 2026)</h3>
+<ol>
+<li>Entra a script.google.com.</li>
+<li>Ve al icono del Reloj (Activadores).</li>
+<li>Haz clic en los tres puntos y elige <strong>Eliminar activador</strong>.</li>
+<li>Listo, esta cuenta ya no tocará nada de la bandeja de entrada.</li>
+</ol>
+<h3 id="2-en-la-cuenta-del-año-nuevo-cuenta-2027">2. En la Cuenta del año nuevo (Cuenta 2027)</h3>
+<ol>
+<li>Crea tu nueva carpeta <code>MIS_RECUERDOS_2027</code>.</li>
+<li>Copia el Script de la cuenta anterior y pégalo en un nuevo proyecto de esta cuenta.</li>
+<li>Actualiza el ID de la carpeta destino (el de <code>MIS_RECUERDOS_2027</code>). El ID de la bandeja de entrada sigue siendo el mismo de siempre.</li>
+<li>Dale a <strong>Ejecutar</strong> una vez para autorizar los permisos.</li>
+<li>Crea el Activador (Reloj) para que corra cada madrugada.</li>
+<li>Comparte la carpeta <code>MIS_RECUERDOS_2027</code> con tu Cuenta Principal (A).</li>
+</ol>
+<h3 id="3-en-tu-cuenta-principal-a">3. En tu Cuenta Principal (A)</h3>
+<ol>
+<li>Ve a “Compartido conmigo”, busca la nueva carpeta de 2027 y crea el <strong>Acceso directo</strong> en tu unidad principal.</li>
+<li>(Recomendable) Borra el acceso directo del año anterior si ya no quieres verlo ahí, aunque no estorba.</li>
+</ol>
+<hr/>
+<h2 id="notas-importantes">Notas Importantes</h2>
+<h3 id="sobre-las-fechas">Sobre las fechas</h3>
+<p>Como acordamos que el script usará la fecha de Subida/Creación en Drive:</p>
+<ul>
+<li>Si subes algo el 2 de enero, pero la foto era del 30 de diciembre, el script la pondrá en Enero.</li>
+<li><strong>Consejo:</strong> Si tienes fotos acumuladas de fin de año, deja que el script de 2026 corra hasta el 2 o 3 de enero antes de apagarlo, para que termine de procesar los “resquicios” del año anterior.</li>
+</ul>
+<h3 id="sobre-el-cambio-de-año">Sobre el cambio de año</h3>
+<p>Cuando termine el año (ej. el 31 de diciembre o 1 de enero):</p>
+<ol>
+<li>Entras a los Activadores (el reloj) de la Cuenta 2026 y eliminas el activador. El script se queda ahí, pero ya no “despierta” cada noche.</li>
+<li>Configuras el script en la Cuenta 2027 y activas su reloj.</li>
+</ol>
+<hr/>
+<blockquote>
+<p>Animate a darle una ⭐ en Github: <a href="https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script">https://github.com/YamilAyma/setup-recuerdos-gdrive-automatico-script</a></p>
+</blockquote>  </div> </article>  </main> <footer class="w-full py-8 text-center text-sm text-stone-500 dark:text-stone-400 mt-auto border-t border-black/5 dark:border-white/5"> <div class="mb-4 flex justify-center gap-4"> <a href="https://github.com/yamilayma" target="_blank" rel="noopener noreferrer" class="hover:text-stone-800 dark:hover:text-stone-200 transition-colors"> GitHub </a><a href="mailto:yamilaymadev@gmail.com" target="_blank" rel="noopener noreferrer" class="hover:text-stone-800 dark:hover:text-stone-200 transition-colors"> Email </a> </div> <p>
+&copy; 2026 Yamil Ayma.
+</p> </footer> <script type="module" src="/_astro/Layout.astro_astro_type_script_index_0_lang.BH5P8GYt.js"></script> </body> </html>
