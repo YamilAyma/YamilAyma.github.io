@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+    <defs>
+        <!-- Sombra paralela para las cards -->
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="4" dy="12" stdDeviation="14" flood-color="#A37845" flood-opacity="0.25" />
+        </filter>
+    </defs>
+
+    <!-- GRUPO DE CARDS -->
+    
+    <!-- 1. Card Superior Derecha: Búsqueda -->
+    <g transform="translate(300, 60) rotate(15)">
+        <rect width="180" height="180" rx="22" fill="#FDF5E3" stroke="#C59859" stroke-width="2.5" filter="url(#shadow)" />
+        <rect x="24" y="24" width="48" height="48" rx="12" fill="#F1DFCA" stroke="#C59859" stroke-width="1.5" />
+        <!-- Icono Lupa -->
+        <circle cx="45" cy="45" r="9" fill="none" stroke="#AF7A3E" stroke-width="3" />
+        <line x1="52" y1="52" x2="60" y2="60" stroke="#AF7A3E" stroke-width="3" stroke-linecap="round" />
+        <!-- Líneas de contenido -->
+        <rect x="24" y="110" width="85" height="12" rx="6" fill="#F1DFCA" />
+        <rect x="24" y="134" width="50" height="12" rx="6" fill="#F1DFCA" />
+    </g>
+
+    <!-- 2. Card Superior Izquierda: Cohete -->
+    <g transform="translate(60, 100) rotate(-12)">
+        <rect width="180" height="180" rx="22" fill="#FDF5E3" stroke="#C59859" stroke-width="2.5" filter="url(#shadow)" />
+        <rect x="24" y="24" width="48" height="48" rx="12" fill="#F1DFCA" stroke="#C59859" stroke-width="1.5" />
+        <!-- Icono Cohete -->
+        <g transform="rotate(45, 48, 48)">
+            <rect x="40" y="28" width="16" height="26" rx="8" fill="none" stroke="#AF7A3E" stroke-width="2.5"/>
+            <path d="M40,46 L32,54 L40,54 Z" fill="none" stroke="#AF7A3E" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M56,46 L64,54 L56,54 Z" fill="none" stroke="#AF7A3E" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="48" cy="38" r="3" fill="none" stroke="#AF7A3E" stroke-width="2.5"/>
+            <path d="M44,54 L48,62 L52,54" fill="none" stroke="#AF7A3E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <!-- Líneas de contenido -->
+        <rect x="24" y="110" width="100" height="12" rx="6" fill="#F1DFCA" />
+        <rect x="24" y="134" width="65" height="12" rx="6" fill="#F1DFCA" />
+    </g>
+
+    <!-- 3. Card Inferior Derecha: Código -->
+    <g transform="translate(280, 260) rotate(10)">
+        <rect width="180" height="180" rx="22" fill="#FDF5E3" stroke="#C59859" stroke-width="2.5" filter="url(#shadow)" />
+        <rect x="24" y="24" width="48" height="48" rx="12" fill="#F1DFCA" stroke="#C59859" stroke-width="1.5" />
+        <!-- Icono </> -->
+        <polyline points="36,36 26,48 36,60" fill="none" stroke="#AF7A3E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        <line x1="50" y1="34" x2="44" y2="62" stroke="#AF7A3E" stroke-width="3" stroke-linecap="round" />
+        <polyline points="58,36 68,48 58,60" fill="none" stroke="#AF7A3E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        <!-- Líneas de contenido -->
+        <rect x="24" y="110" width="110" height="12" rx="6" fill="#F1DFCA" />
+        <rect x="24" y="134" width="75" height="12" rx="6" fill="#F1DFCA" />
+    </g>
+
+    <!-- 4. Card Central: Terminal (Superpuesta al final) -->
+    <g transform="translate(145, 155) rotate(0)">
+        <rect width="190" height="190" rx="22" fill="#FDF5E3" stroke="#C59859" stroke-width="2.5" filter="url(#shadow)" />
+        <rect x="26" y="26" width="52" height="52" rx="12" fill="#F1DFCA" stroke="#C59859" stroke-width="1.5" />
+        <!-- Icono >_ -->
+        <polyline points="38,40 48,52 38,64" fill="none" stroke="#AF7A3E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <line x1="52" y1="64" x2="68" y2="64" stroke="#AF7A3E" stroke-width="3.5" stroke-linecap="round" />
+        <!-- Líneas de contenido -->
+        <rect x="26" y="122" width="120" height="14" rx="7" fill="#F1DFCA" />
+        <rect x="26" y="150" width="80" height="14" rx="7" fill="#F1DFCA" />
+    </g>
+</svg>
