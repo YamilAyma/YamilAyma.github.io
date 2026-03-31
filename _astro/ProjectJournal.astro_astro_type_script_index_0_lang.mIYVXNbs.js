@@ -1,0 +1,1 @@
+import{g as o}from"./index.CB87Sc6I.js";import{S as e}from"./ScrollTrigger.Cv03IO65.js";o.registerPlugin(e);const t=document.querySelectorAll(".journal-entry");t.forEach(r=>{o.from(r,{scrollTrigger:{trigger:r,start:"top 85%",toggleActions:"play none none none"},opacity:0,x:-20,duration:.8,ease:"power3.out"})});

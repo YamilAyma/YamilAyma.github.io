@@ -1,0 +1,1 @@
+import{g as o}from"./index.CB87Sc6I.js";const a=()=>{const t=document.querySelectorAll(".nav-card");t.length>0&&t.forEach(e=>{e.addEventListener("mouseenter",()=>{o.to(e,{y:-6,scale:1.01,duration:.3,ease:"power2.out"})}),e.addEventListener("mouseleave",()=>{o.to(e,{y:0,scale:1,duration:.3,ease:"power2.inOut"})})})};a();document.addEventListener("astro:page-load",a);
